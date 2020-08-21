@@ -1,4 +1,5 @@
-﻿using BlinkerAPI.Enums;
+﻿using BlinkerAPI.Entities;
+using BlinkerAPI.Enums;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Device.Gpio;
@@ -11,10 +12,10 @@ namespace BlinkerAPI.Controllers
     [ApiController]
     public class LedController : ControllerBase
     {
-        private const int LedPin = 6;
         private const int lightTimeInMilliseconds = 1000;
         private const int dimTimeInMilliseconds = 200;
-        private GpioController _gpioController;
+        private readonly GpioController _gpioController;
+        private readonly int LedPin = GpioConfiguration.LedPin;
 
         private static CancellationTokenSource CancellationSource;
 
