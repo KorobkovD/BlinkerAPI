@@ -12,13 +12,12 @@ namespace BlinkerAPI.Controllers
     [ApiController]
     public class LedController : ControllerBase
     {
-        private const int lightTimeInMilliseconds = 1000;
-        private const int dimTimeInMilliseconds = 200;
+        private readonly int lightTimeInMilliseconds = GpioConfiguration.LightTimeInMilliseconds;
+        private readonly int dimTimeInMilliseconds = GpioConfiguration.DimTimeInMilliseconds;
         private readonly GpioController _gpioController;
         private readonly int LedPin = GpioConfiguration.LedPin;
 
         private static CancellationTokenSource CancellationSource;
-
         private static Task BlinkerTask;
 
         public LedController()
@@ -45,10 +44,7 @@ namespace BlinkerAPI.Controllers
             switch (state)
             {
                 case BlinkState.OFF:
-                    if (BlinkerTask != null && BlinkerTask.Status == TaskStatus.Running)
-                    {
-                        CancellationSource.Cancel();
-                    }
+                    StopBlinking();
                     break;
 
                 case BlinkState.BLINK:
@@ -82,6 +78,14 @@ namespace BlinkerAPI.Controllers
 
                 _gpioController.Write(LedPin, PinValue.High);
                 Thread.Sleep(dimTimeInMilliseconds);
+            }
+        }
+
+        public static void StopBlinking()
+        {
+            if (BlinkerTask != null && BlinkerTask.Status == TaskStatus.Running)
+            {
+                CancellationSource.Cancel();
             }
         }
     }
